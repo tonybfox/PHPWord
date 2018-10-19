@@ -333,6 +333,17 @@ abstract class AbstractPart
         foreach ($tblNodes as $tblNode) {
             if ('w:tblGrid' == $tblNode->nodeName) { // Column
                 // @todo Do something with table columns
+            } elseif ('w:sdt' == $rowNode->nodeName) { // SDT
+                $cellWidth = null;
+                $cellStyle = null;
+
+                $cell = $row->addCell($cellWidth, $cellStyle);
+                $cellNodes = $xmlReader->getElements('w:sdtContent/w:tc/*', $rowNode);
+                foreach ($cellNodes as $cellNode) {
+                    if ('w:p' == $cellNode->nodeName) { // Paragraph
+                        $this->readParagraph($xmlReader, $cellNode, $cell, $docPart);
+                    }
+                }
             } elseif ('w:tr' == $tblNode->nodeName) { // Row
                 $rowHeight = $xmlReader->getAttribute('w:val', $tblNode, 'w:trPr/w:trHeight');
                 $rowHRule = $xmlReader->getAttribute('w:hRule', $tblNode, 'w:trPr/w:trHeight');
